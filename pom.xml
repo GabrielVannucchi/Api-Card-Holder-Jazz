@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>tech.jazz</groupId>
-	<artifactId>api-portador</artifactId>
+	<artifactId>api-card-holder</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>api-portador</name>
 	<description>Demo project for Spring Boot</description>
