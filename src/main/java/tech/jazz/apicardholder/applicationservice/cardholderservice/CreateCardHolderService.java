@@ -21,7 +21,7 @@ import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisNotF
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCreditAnalysisAndClientException;
 import tech.jazz.apicardholder.presentation.handler.exception.DuplicatedCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.IncompleteBanckAccountException;
-import tech.jazz.apicardholder.presentation.handler.exception.InvalidCardHolderRequestException;
+import tech.jazz.apicardholder.presentation.handler.exception.UnapprovedCreditAnalysisException;
 
 @Service
 @RequiredArgsConstructor
@@ -32,24 +32,10 @@ public class CreateCardHolderService {
     private final CreditApi creditApi;
 
     public CardHolderResponse createCardHolder(CardHolderRequest cardHolderRequest) {
-        if (cardHolderRequest.clientId() == null || cardHolderRequest.creditAnalysisId() == null) {
-            throw new InvalidCardHolderRequestException("Please insert a Client Id and a Credit Analysis Id");
-        }
         if (cardHolderRepository.findFirstByClientId(cardHolderRequest.clientId()) != null) {
             throw new DuplicatedCardHolderException("There's already a Card Holder with this Client Id");
         }
-        final BigDecimal clientLimit;
-        try {
-            final CreditAnalysisResponse creditAnalysis = creditApi.getAnalysis(cardHolderRequest.creditAnalysisId());
-            if (!creditAnalysis.clientId().equals(cardHolderRequest.clientId())) {
-                throw new DivergentCreditAnalysisAndClientException("Client id does not correspond with this Credit Analysis");
-            }
-            clientLimit = creditAnalysis.approvedLimit();
-        } catch (RetryableException e) {
-            throw new CreditAnalysisApiUnavailableException("Credit Analysis Api unavailable");
-        } catch (FeignException e) {
-            throw new CreditAnalysisNotFoundException("Credit Analysis not found");
-        }
+        final BigDecimal clientLimit = getCreditAnalysisApi(cardHolderRequest).approvedLimit();
 
         final CardHolderDomain cardHolderDomain = CardHolderDomain.builder()
                 .clientId(cardHolderRequest.clientId())
@@ -79,8 +65,7 @@ public class CreateCardHolderService {
         final CardHolderEntity cardHolderEntity = cardHolderMapper.from(cardHolderDomain).toBuilder()
                 .bankAccount(null)
                 .build();
-        final CardHolderResponse cardHolderResponse = cardHolderMapper.from(cardHolderRepository.save(cardHolderEntity));
-        return cardHolderResponse;
+        return cardHolderMapper.from(cardHolderRepository.save(cardHolderEntity));
     }
 
     private boolean isBankAccountComplete(CardHolderRequest.BankAccount bankAccount) {
@@ -92,4 +77,22 @@ public class CreateCardHolderService {
             return false;
         }
     }
+
+    private CreditAnalysisResponse getCreditAnalysisApi(CardHolderRequest cardHolderRequest) {
+        try {
+            final CreditAnalysisResponse creditAnalysis = creditApi.getAnalysis(cardHolderRequest.creditAnalysisId());
+            if (!creditAnalysis.clientId().equals(cardHolderRequest.clientId())) {
+                throw new DivergentCreditAnalysisAndClientException("Client id does not correspond with this Credit Analysis");
+            }
+            if (!creditAnalysis.approved()) {
+                throw new UnapprovedCreditAnalysisException("Card Holder negated due to unapproved Credit Analysis");
+            }
+            return creditAnalysis;
+        } catch (RetryableException e) {
+            throw new CreditAnalysisApiUnavailableException("Credit Analysis Api unavailable");
+        } catch (FeignException e) {
+            throw new CreditAnalysisNotFoundException("Credit Analysis not found");
+        }
+    }
+
 }
