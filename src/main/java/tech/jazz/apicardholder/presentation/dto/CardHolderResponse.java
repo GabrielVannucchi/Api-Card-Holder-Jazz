@@ -8,14 +8,16 @@ import tech.jazz.apicardholder.infrastructure.repository.util.StatusEnum;
 
 public record CardHolderResponse(
         UUID cardHolderId,
+        UUID creditAnalysisId,
         StatusEnum statusEnum,
         BigDecimal limit,
         LocalDateTime createdAt
 ) {
 
     @Builder
-    public CardHolderResponse(UUID cardHolderId, StatusEnum statusEnum, BigDecimal limit, LocalDateTime createdAt) {
+    public CardHolderResponse(UUID cardHolderId, UUID creditAnalysisId, StatusEnum statusEnum, BigDecimal limit, LocalDateTime createdAt) {
         this.cardHolderId = cardHolderId;
+        this.creditAnalysisId = creditAnalysisId;
         this.statusEnum = statusEnum;
         this.limit = limit;
         this.createdAt = createdAt;

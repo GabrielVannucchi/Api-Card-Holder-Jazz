@@ -28,6 +28,9 @@ public class CardHolderEntity {
     @Column(name = "card_holder_id")
     UUID cardHolderId;
 
+    @Column(name = "credit_analysis_id")
+    UUID creditAnalysisId;
+
     @Column(name = "client_id")
     UUID clientId;
 
@@ -51,8 +54,10 @@ public class CardHolderEntity {
     LocalDateTime updatedAt;
 
     @Builder(toBuilder = true)
-    public CardHolderEntity(UUID cardHolderId, UUID clientId, StatusEnum statusEnum, BigDecimal limit, BankAccountEntity bankAccount) {
+    public CardHolderEntity(UUID cardHolderId, UUID creditAnalysisId, UUID clientId, StatusEnum statusEnum,
+                            BigDecimal limit, BankAccountEntity bankAccount) {
         this.cardHolderId = UUID.randomUUID();
+        this.creditAnalysisId = creditAnalysisId;
         this.clientId = clientId;
         this.statusEnum = statusEnum;
         this.limit = limit;

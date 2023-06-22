@@ -39,6 +39,7 @@ public class CreateCardHolderService {
 
         final CardHolderDomain cardHolderDomain = CardHolderDomain.builder()
                 .clientId(cardHolderRequest.clientId())
+                .creditAnalysisId(cardHolderRequest.creditAnalysisId())
                 .statusEnum(StatusEnum.ACTIVE)
                 .limit(clientLimit)
                 .build();
