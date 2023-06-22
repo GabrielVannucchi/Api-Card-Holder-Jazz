@@ -172,21 +172,21 @@ class CreateCardHolderServiceTest {
 
     }
 
-    public CardHolderRequest cardHolderRequestFactoryWithBank(){
+    private CardHolderRequest cardHolderRequestFactoryWithBank(){
         return new CardHolderRequest(UUID.randomUUID(), UUID.randomUUID(),
                 new CardHolderRequest.BankAccount("12345678-9", "1234", "123"));
     }
 
-    public CardHolderRequest cardHolderRequestFactory(){
+    private CardHolderRequest cardHolderRequestFactory(){
         return new CardHolderRequest(UUID.randomUUID(), UUID.randomUUID(),null);
     }
 
-    public CreditAnalysisResponse creditAnalysisResponseFactory(CardHolderRequest cardHolderRequest) {
+    private CreditAnalysisResponse creditAnalysisResponseFactory(CardHolderRequest cardHolderRequest) {
         return new CreditAnalysisResponse(cardHolderRequest.creditAnalysisId(), cardHolderRequest.clientId(),
                 true, BigDecimal.valueOf(6000.0));
     }
 
-    public BankAccountEntity bankAccountEntityFactory() {
+    private BankAccountEntity bankAccountEntityFactory() {
         return BankAccountEntity.builder()
                 .bankAccountId(UUID.randomUUID())
                 .account("12345678-9")
@@ -195,7 +195,7 @@ class CreateCardHolderServiceTest {
                 .build();
     }
 
-    public CardHolderEntity cardHolderEntityFactory() {
+    private CardHolderEntity cardHolderEntityFactory() {
         return CardHolderEntity.builder()
                 .cardHolderId(UUID.randomUUID())
                 .clientId(UUID.randomUUID())

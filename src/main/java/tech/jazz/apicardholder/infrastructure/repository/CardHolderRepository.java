@@ -6,5 +6,4 @@ import tech.jazz.apicardholder.infrastructure.repository.entity.CardHolderEntity
 
 public interface CardHolderRepository extends JpaRepository<CardHolderEntity, UUID> {
     CardHolderEntity findFirstByClientId(UUID clientId);
-
 }
