@@ -13,9 +13,11 @@ import tech.jazz.apicardholder.presentation.handler.exception.BankAccountInvalid
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisApiUnavailableException;
 import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisNotFoundException;
+import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCreditAnalysisAndClientException;
 import tech.jazz.apicardholder.presentation.handler.exception.DuplicatedCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.IncompleteBanckAccountException;
+import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitException;
 import tech.jazz.apicardholder.presentation.handler.exception.InvalidCardHolderRequestException;
 import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
 import tech.jazz.apicardholder.presentation.handler.exception.UnapprovedCreditAnalysisException;
@@ -148,6 +150,28 @@ public class RestExceptionHandler {
 
         final ProblemDetail problemDetail = problemDetailBuilder(
                 HttpStatus.NOT_FOUND, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(DivergentCardHolderException.class)
+    public ResponseEntity<ProblemDetail> handlerDivergentCardHolderException(DivergentCardHolderException e) {
+
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.BAD_REQUEST, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(InsufficientLimitException.class)
+    public ResponseEntity<ProblemDetail> handlerInsufficientLimitException(InsufficientLimitException e) {
+
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
                 e.getMessage(), e);
         return ResponseEntity.status(problemDetail.getStatus())
                 .body(problemDetail

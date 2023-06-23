@@ -1,6 +1,7 @@
 package tech.jazz.apicardholder.applicationservice.cardholderservice;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,7 @@ public class SearchCardHolderService {
     private final CardHolderMapper cardHolderMapper;
 
     public List<CardHolderResponse> listAll(String status) {
-
-        if (status == null) {
+        if (Objects.isNull(status)) {
             return cardHolderRepository.findAll().stream()
                     .map(cardHolderMapper::from)
                     .collect(Collectors.toList());

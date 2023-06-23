@@ -12,5 +12,4 @@ public interface CardHolderMapper {
     CardHolderEntity from(CardHolderDomain cardHolderDomain);
 
     CardHolderResponse from(CardHolderEntity cardHolderEntity);
-
 }
