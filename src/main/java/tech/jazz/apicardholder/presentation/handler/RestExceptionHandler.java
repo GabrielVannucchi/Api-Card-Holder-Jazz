@@ -16,6 +16,7 @@ import tech.jazz.apicardholder.presentation.handler.exception.DivergentCreditAna
 import tech.jazz.apicardholder.presentation.handler.exception.DuplicatedCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.IncompleteBanckAccountException;
 import tech.jazz.apicardholder.presentation.handler.exception.InvalidCardHolderRequestException;
+import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
 import tech.jazz.apicardholder.presentation.handler.exception.UnapprovedCreditAnalysisException;
 
 @RestControllerAdvice
@@ -130,6 +131,15 @@ public class RestExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(StatusOutOfFormatException.class)
+    public ResponseEntity<ProblemDetail> handlerStatusOutOfFormatException(StatusOutOfFormatException e) {
 
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.BAD_REQUEST, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
 
 }

@@ -21,6 +21,7 @@ import tech.jazz.apicardholder.infrastructure.repository.entity.BankAccountEntit
 import tech.jazz.apicardholder.infrastructure.repository.entity.CardHolderEntity;
 import tech.jazz.apicardholder.infrastructure.repository.util.StatusEnum;
 import tech.jazz.apicardholder.presentation.dto.CardHolderResponse;
+import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -38,10 +39,36 @@ class SearchCardHolderServiceTest {
         Mockito.when(cardHolderRepository.findAll()).thenReturn(
                 List.of(cardHolderEntityFactory(), cardHolderEntityFactory(), cardHolderEntityFactory()));
 
-        List<CardHolderResponse> cardHolderResponses = searchCardHolderService.listAll();
+        List<CardHolderResponse> cardHolderResponses = searchCardHolderService.listAll(null);
 
         assertNotNull(cardHolderResponses);
         assertEquals(3, cardHolderResponses.size());
+    }
+
+    @Test
+    void should_return_all_active_cardHolders(){
+        Mockito.when(cardHolderRepository.findByStatusEnum(Mockito.any(StatusEnum.class))).thenReturn(
+                List.of(cardHolderEntityFactory(), cardHolderEntityFactory(), cardHolderEntityFactory()));
+
+        List<CardHolderResponse> cardHolderResponses = searchCardHolderService.listAll("active");
+
+        assertNotNull(cardHolderResponses);
+        assertEquals(3, cardHolderResponses.size());
+    }
+
+    @Test
+    void should_return_all_inactive_cardHolders(){
+        Mockito.when(cardHolderRepository.findByStatusEnum(Mockito.any(StatusEnum.class))).thenReturn(
+                List.of(cardHolderEntityFactory(), cardHolderEntityFactory(), cardHolderEntityFactory()));
+
+        List<CardHolderResponse> cardHolderResponses = searchCardHolderService.listAll("inactive");
+
+        assertNotNull(cardHolderResponses);
+        assertEquals(3, cardHolderResponses.size());
+    }
+    @Test
+    void should_throw_StatusOutOfFormatException_when_status_is_out_of_enum(){
+        assertThrows(StatusOutOfFormatException.class, () -> searchCardHolderService.listAll("aaaaaaa"));
     }
 
 
