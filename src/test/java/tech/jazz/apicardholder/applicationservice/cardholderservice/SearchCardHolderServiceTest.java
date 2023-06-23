@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -21,6 +22,7 @@ import tech.jazz.apicardholder.infrastructure.repository.entity.BankAccountEntit
 import tech.jazz.apicardholder.infrastructure.repository.entity.CardHolderEntity;
 import tech.jazz.apicardholder.infrastructure.repository.util.StatusEnum;
 import tech.jazz.apicardholder.presentation.dto.CardHolderResponse;
+import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
 
 @ExtendWith(MockitoExtension.class)
@@ -70,7 +72,21 @@ class SearchCardHolderServiceTest {
     void should_throw_StatusOutOfFormatException_when_status_is_out_of_enum(){
         assertThrows(StatusOutOfFormatException.class, () -> searchCardHolderService.listAll("aaaaaaa"));
     }
+    @Test
+    void should_return_given_cardHolder(){
+        Mockito.when(cardHolderRepository.findByCardHolderId(UUID.fromString("12341234-1234-1234-1234-123412341234"))).thenReturn(Optional.of(cardHolderEntityFactory()));
+        CardHolderResponse cardHolderResponse = searchCardHolderService.findCardHolder(UUID.fromString("12341234-1234-1234-1234-123412341234"));
 
+        assertNotNull(cardHolderResponse);
+        assertNotNull(cardHolderResponse.cardHolderId());
+    }
+
+    @Test
+    void should_throw_CardHolderNotFoundException_when_id_dont_exist(){
+        Mockito.when(cardHolderRepository.findByCardHolderId(UUID.fromString("12341234-1234-1234-1234-123412341234"))).thenReturn(Optional.empty());
+        assertThrows(CardHolderNotFoundException.class,
+                () -> searchCardHolderService.findCardHolder(UUID.fromString("12341234-1234-1234-1234-123412341234")));
+    }
 
     private CardHolderEntity cardHolderEntityFactory() {
         return CardHolderEntity.builder()

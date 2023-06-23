@@ -2,9 +2,11 @@ package tech.jazz.apicardholder.presentation.controller;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,4 +37,9 @@ public class CardHolderController {
         return searchCardHolderService.listAll(status);
     }
 
+    @GetMapping("{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CardHolderResponse findCardHolder(@PathVariable UUID id) {
+        return searchCardHolderService.findCardHolder(id);
+    }
 }
