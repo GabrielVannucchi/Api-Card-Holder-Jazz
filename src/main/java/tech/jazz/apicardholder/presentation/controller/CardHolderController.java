@@ -6,6 +6,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,12 +16,15 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.CreateCardHolderService;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.CreateCardService;
+import tech.jazz.apicardholder.applicationservice.cardholderservice.PatchCardService;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.SearchCardHolderService;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.SearchCardService;
 import tech.jazz.apicardholder.presentation.dto.CardHolderRequest;
 import tech.jazz.apicardholder.presentation.dto.CardHolderResponse;
 import tech.jazz.apicardholder.presentation.dto.CardRequest;
 import tech.jazz.apicardholder.presentation.dto.CardResponse;
+import tech.jazz.apicardholder.presentation.dto.UpdateLimitRequest;
+import tech.jazz.apicardholder.presentation.dto.UpdateLimitResponse;
 
 @RestController
 @RequestMapping("card-holders/v1.0")
@@ -30,6 +34,7 @@ public class CardHolderController {
     private final SearchCardHolderService searchCardHolderService;
     private final CreateCardService createCardService;
     private final SearchCardService searchCardService;
+    private final PatchCardService patchCardService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -68,4 +73,13 @@ public class CardHolderController {
                                      @PathVariable UUID id) {
         return searchCardService.findById(cardHolderId, id);
     }
+
+    @PatchMapping("{cardHolderId}/cards/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public UpdateLimitResponse updateLimit(@PathVariable UUID cardHolderId,
+                                           @PathVariable UUID id,
+                                           @RequestBody UpdateLimitRequest updateLimitRequest) {
+        return patchCardService.updateLimit(cardHolderId, id, updateLimitRequest);
+    }
+
 }

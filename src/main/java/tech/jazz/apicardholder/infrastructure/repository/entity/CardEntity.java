@@ -51,7 +51,11 @@ public class CardEntity {
     @Builder(toBuilder = true)
     public CardEntity(UUID cardId, CardHolderEntity cardHolder, BigDecimal limit, String cardNumber, Integer cvv, LocalDate dueDate,
                       LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.cardId = UUID.randomUUID();
+        if (cardId == null) {
+            this.cardId = UUID.randomUUID();
+        } else {
+            this.cardId = cardId;
+        }
         this.cardHolder = cardHolder;
         this.limit = limit;
         this.cardNumber = cardNumber;

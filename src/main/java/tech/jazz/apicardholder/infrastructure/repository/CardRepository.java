@@ -11,6 +11,8 @@ public interface CardRepository extends JpaRepository<CardEntity, UUID> {
 
     Optional<CardEntity> findByCardId(UUID cardId);
 
+    List<CardEntity> findByCardHolder_CardHolderIdAndCardIdNot(UUID cardHolderId, UUID cardId);
+
 
 
 }
