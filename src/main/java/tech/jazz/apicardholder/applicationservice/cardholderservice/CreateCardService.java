@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.jazz.apicardholder.infrastructure.domain.CardDomain;
 import tech.jazz.apicardholder.infrastructure.mapper.CardHolderMapper;
 import tech.jazz.apicardholder.infrastructure.mapper.CardMapper;
 import tech.jazz.apicardholder.infrastructure.repository.CardHolderRepository;

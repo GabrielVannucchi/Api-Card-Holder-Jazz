@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.CreateCardHolderService;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.CreateCardService;
 import tech.jazz.apicardholder.applicationservice.cardholderservice.SearchCardHolderService;
+import tech.jazz.apicardholder.applicationservice.cardholderservice.SearchCardService;
 import tech.jazz.apicardholder.presentation.dto.CardHolderRequest;
 import tech.jazz.apicardholder.presentation.dto.CardHolderResponse;
 import tech.jazz.apicardholder.presentation.dto.CardRequest;
@@ -28,6 +29,7 @@ public class CardHolderController {
     private final CreateCardHolderService createCardHolderService;
     private final SearchCardHolderService searchCardHolderService;
     private final CreateCardService createCardService;
+    private final SearchCardService searchCardService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,5 +53,11 @@ public class CardHolderController {
     @ResponseStatus(HttpStatus.CREATED)
     public CardResponse createCard(@PathVariable UUID cardHolderId, @RequestBody CardRequest cardRequest) {
         return createCardService.createCard(cardHolderId, cardRequest);
+    }
+
+    @GetMapping("{cardHolderId}/cards")
+    @ResponseStatus(HttpStatus.OK)
+    public List<CardResponse> listAllCards(@PathVariable UUID cardHolderId) {
+        return searchCardService.listAllByCardHolder(cardHolderId);
     }
 }
