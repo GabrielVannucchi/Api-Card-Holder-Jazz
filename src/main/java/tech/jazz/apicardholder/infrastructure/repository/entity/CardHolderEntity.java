@@ -56,7 +56,11 @@ public class CardHolderEntity {
     @Builder(toBuilder = true)
     public CardHolderEntity(UUID cardHolderId, UUID creditAnalysisId, UUID clientId, StatusEnum statusEnum,
                             BigDecimal limit, BankAccountEntity bankAccount) {
-        this.cardHolderId = UUID.randomUUID();
+        if (cardHolderId == null) {
+            this.cardHolderId = UUID.randomUUID();
+        } else {
+            this.cardHolderId = cardHolderId;
+        }
         this.creditAnalysisId = creditAnalysisId;
         this.clientId = clientId;
         this.statusEnum = statusEnum;

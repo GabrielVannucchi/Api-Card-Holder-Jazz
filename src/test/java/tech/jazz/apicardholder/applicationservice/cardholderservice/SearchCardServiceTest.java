@@ -21,11 +21,14 @@ import tech.jazz.apicardholder.infrastructure.mapper.CardMapper;
 import tech.jazz.apicardholder.infrastructure.mapper.CardMapperImpl;
 import tech.jazz.apicardholder.infrastructure.repository.CardHolderRepository;
 import tech.jazz.apicardholder.infrastructure.repository.CardRepository;
+import tech.jazz.apicardholder.infrastructure.repository.entity.BankAccountEntity;
 import tech.jazz.apicardholder.infrastructure.repository.entity.CardEntity;
 import tech.jazz.apicardholder.infrastructure.repository.entity.CardHolderEntity;
 import tech.jazz.apicardholder.infrastructure.repository.util.StatusEnum;
 import tech.jazz.apicardholder.presentation.dto.CardResponse;
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
+import tech.jazz.apicardholder.presentation.handler.exception.CardNotFoundException;
+import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -57,6 +60,82 @@ class SearchCardServiceTest {
 
         assertThrows(CardHolderNotFoundException.class, () -> searchCardService.listAllByCardHolder(UUID.randomUUID()));
     }
+
+    @Test
+    void should_find_card_with_given_id() {
+        Mockito.when(cardHolderRepository.findByCardHolderId(Mockito.any(UUID.class))).thenReturn(
+                Optional.of(
+                        CardHolderEntity.builder()
+                                .cardHolderId(UUID.fromString("12341234-1234-1234-1234-123412341234"))
+                                .build()
+                ));
+        Mockito.when(cardRepository.findById(Mockito.any(UUID.class))).thenReturn(
+                Optional.of(
+                        CardEntity.builder()
+                                .cardId(UUID.randomUUID())
+                                .cardHolder(CardHolderEntity.builder()
+                                        .cardHolderId(UUID.fromString("12341234-1234-1234-1234-123412341234"))
+                                        .build())
+                                .limit(BigDecimal.valueOf(200))
+                                .cardNumber("1234 1234 1234 1234")
+                                .cvv(123)
+                                .dueDate(LocalDate.now())
+                                .build()
+                ));
+
+        UUID cardHolderId = UUID.fromString("12341234-1234-1234-1234-123412341234");
+
+        CardResponse cardResponse = searchCardService.findById(cardHolderId, UUID.randomUUID());
+
+        assertNotNull(cardResponse);
+        assertNotNull(cardResponse.cardId());
+        assertNotNull(cardResponse.cardNumber());
+        assertNotNull(cardResponse.cvv());
+        assertNotNull(cardResponse.dueDate());
+
+
+    }
+
+    @Test
+    void should_throw_CardHolderNotFoundException_when_cardHolderId_dont_exist() {
+        Mockito.when(cardHolderRepository.findByCardHolderId(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+        assertThrows(CardHolderNotFoundException.class, () -> searchCardService.findById(UUID.randomUUID(), UUID.randomUUID()));
+
+    }
+
+    @Test
+    void should_throw_CardNotFoundException_when_cardId_dont_exist() {
+        Mockito.when(cardHolderRepository.findByCardHolderId(Mockito.any(UUID.class))).thenReturn(
+                Optional.of(
+                        CardHolderEntity.builder()
+                                .cardHolderId(UUID.fromString("12341234-1234-1234-1234-123412341234"))
+                                .build()
+                ));
+        Mockito.when(cardRepository.findById(Mockito.any(UUID.class))).thenReturn(
+                Optional.empty());
+
+        assertThrows(CardNotFoundException.class, () -> searchCardService.findById(UUID.randomUUID(), UUID.randomUUID()));
+    }
+
+    @Test
+    void should_throw_DivergentCardHolderException_when_cardHolderId_dont_correspond_with_cardHolderId_in_cardEntity() {
+        Mockito.when(cardHolderRepository.findByCardHolderId(Mockito.any(UUID.class))).thenReturn(
+                Optional.of(
+                        CardHolderEntity.builder()
+                                .cardHolderId(UUID.fromString("12341234-1234-1234-1234-123412341234"))
+                                .build()
+                ));
+        Mockito.when(cardRepository.findById(Mockito.any(UUID.class))).thenReturn(
+                Optional.of(
+                        cardEntityFactory()
+                ));
+
+
+        assertThrows(DivergentCardHolderException.class, () -> searchCardService.findById(UUID.randomUUID(), UUID.randomUUID()));
+
+    }
+
+
 
     private CardHolderEntity cardHolderEntityFactory() {
         return CardHolderEntity.builder()

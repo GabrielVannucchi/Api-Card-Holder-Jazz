@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tech.jazz.apicardholder.presentation.handler.exception.BankAccountInvalidDataException;
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
+import tech.jazz.apicardholder.presentation.handler.exception.CardNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisApiUnavailableException;
 import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
@@ -196,6 +197,17 @@ public class RestExceptionHandler {
 
         final ProblemDetail problemDetail = problemDetailBuilder(
                 HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(CardNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handlerCardNotFoundException(CardNotFoundException e) {
+
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.NOT_FOUND, e.getClass().getSimpleName(),
                 e.getMessage(), e);
         return ResponseEntity.status(problemDetail.getStatus())
                 .body(problemDetail

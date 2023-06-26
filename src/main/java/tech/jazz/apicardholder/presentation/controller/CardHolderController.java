@@ -51,7 +51,8 @@ public class CardHolderController {
 
     @PostMapping("{cardHolderId}/cards")
     @ResponseStatus(HttpStatus.CREATED)
-    public CardResponse createCard(@PathVariable UUID cardHolderId, @RequestBody CardRequest cardRequest) {
+    public CardResponse createCard(@PathVariable UUID cardHolderId,
+                                   @RequestBody CardRequest cardRequest) {
         return createCardService.createCard(cardHolderId, cardRequest);
     }
 
@@ -59,5 +60,12 @@ public class CardHolderController {
     @ResponseStatus(HttpStatus.OK)
     public List<CardResponse> listAllCards(@PathVariable UUID cardHolderId) {
         return searchCardService.listAllByCardHolder(cardHolderId);
+    }
+
+    @GetMapping("{cardHolderId}/cards/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CardResponse findCardById(@PathVariable UUID cardHolderId,
+                                     @PathVariable UUID id) {
+        return searchCardService.findById(cardHolderId, id);
     }
 }
