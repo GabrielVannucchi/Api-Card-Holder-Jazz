@@ -6,9 +6,11 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import tech.jazz.apicardholder.presentation.handler.exception.BankAccountInvalidDataException;
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisApiUnavailableException;
@@ -177,5 +179,29 @@ public class RestExceptionHandler {
                 .body(problemDetail
                 );
     }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handlerMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ProblemDetail> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+
 
 }
