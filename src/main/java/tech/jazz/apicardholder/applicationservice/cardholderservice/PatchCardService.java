@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.jazz.apicardholder.infrastructure.mapper.CardMapper;
 import tech.jazz.apicardholder.infrastructure.repository.CardHolderRepository;
 import tech.jazz.apicardholder.infrastructure.repository.CardRepository;
 import tech.jazz.apicardholder.infrastructure.repository.entity.CardEntity;
@@ -22,7 +21,6 @@ import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitE
 public class PatchCardService {
     private final CardRepository cardRepository;
     private final CardHolderRepository cardHolderRepository;
-    private final CardMapper cardMapper;
 
     public UpdateLimitResponse updateLimit(UUID cardHolderId, UUID cardId, UpdateLimitRequest updateLimitRequest) {
         final CardHolderEntity cardHolderEntity = getCardHolderOrThrowException(cardHolderId);
