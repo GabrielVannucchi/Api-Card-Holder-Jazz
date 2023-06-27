@@ -140,6 +140,16 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.10</version>
+				<configuration>
+					<excludes>
+						<exclude>tech/jazz/apicardholder/presentation/**</exclude>
+						<exclude>tech/jazz/apicardholder/ApiPortadorApplication.class</exclude>
+						<exclude>tech/jazz/apicardholder/infrastructure/mapper/**</exclude>
+						<exclude>tech/jazz/apicardholder/infrastructure/repository/**</exclude>
+						<exclude>tech/jazz/apicardholder/applicationservice/dto/**</exclude>
+						<exclude>tech/jazz/apicardholder/applicationservice/creditapi/**</exclude>
+					</excludes>
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
