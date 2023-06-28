@@ -23,11 +23,11 @@ public class PatchCardService {
     private final CardHolderRepository cardHolderRepository;
 
     public UpdateLimitResponse updateLimit(UUID cardHolderId, UUID cardId, UpdateLimitRequest updateLimitRequest) {
-        final CardHolderEntity cardHolderEntity = getCardHolderOrThrowException(cardHolderId);
+        final CardHolderEntity cardHolderEntity = getCardHolder(cardHolderId);
         CardEntity cardEntity = cardRepository.findById(cardId).orElseThrow(
                 () -> new CardNotFoundException("Card not found for given Id"));
         checkIfLimitIsSufficientOfThrowException(updateLimitRequest.limit(), cardHolderEntity, cardEntity);
-        if (!cardEntity.getCardHolder().getCardHolderId().equals(cardHolderId)) {
+        if (!cardHolderId.equals(cardEntity.getCardHolder().getCardHolderId())) {
             throw new DivergentCardHolderException("This card does not belong this card holder");
         }
         cardEntity = cardEntity.toBuilder()
@@ -53,10 +53,11 @@ public class PatchCardService {
         }
     }
 
-    private CardHolderEntity getCardHolderOrThrowException(UUID cardHolderId) {
-        return cardHolderRepository.findByCardHolderId(cardHolderId).orElseThrow(
+    private CardHolderEntity getCardHolder(UUID cardHolderId) {
+        final CardHolderEntity cardHolderEntity = cardHolderRepository.findByCardHolderId(cardHolderId).orElseThrow(
                 () -> new CardHolderNotFoundException("Card Holder not found for given id")
         );
+        return cardHolderEntity;
     }
 
 }
