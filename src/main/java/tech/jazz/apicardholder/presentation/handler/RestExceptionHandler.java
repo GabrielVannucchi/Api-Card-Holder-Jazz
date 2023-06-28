@@ -1,21 +1,19 @@
 package tech.jazz.apicardholder.presentation.handler;
 
+import feign.FeignException;
+import feign.RetryableException;
 import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.time.LocalDateTime;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import tech.jazz.apicardholder.presentation.handler.exception.BankAccountInvalidDataException;
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
-import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisApiUnavailableException;
-import tech.jazz.apicardholder.presentation.handler.exception.CreditAnalysisNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCreditAnalysisAndClientException;
-import tech.jazz.apicardholder.presentation.handler.exception.DuplicatedCardHolderException;
-import tech.jazz.apicardholder.presentation.handler.exception.IncompleteBanckAccountException;
 import tech.jazz.apicardholder.presentation.handler.exception.InvalidCardHolderRequestException;
 import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
 import tech.jazz.apicardholder.presentation.handler.exception.UnapprovedCreditAnalysisException;
@@ -31,20 +29,10 @@ public class RestExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(CreditAnalysisApiUnavailableException.class)
-    public ResponseEntity<ProblemDetail> handlerCreditAnalysisApiUnavailableException(CreditAnalysisApiUnavailableException e) {
+    @ExceptionHandler(FeignException.class)
+    public ResponseEntity<ProblemDetail> handlerFeignException(FeignException e) {
         final ProblemDetail problemDetail = problemDetailBuilder(
-                HttpStatus.SERVICE_UNAVAILABLE, e.getClass().getSimpleName(),
-                e.getMessage(), e);
-        return ResponseEntity.status(problemDetail.getStatus())
-                .body(problemDetail
-                );
-    }
-
-    @ExceptionHandler(CreditAnalysisNotFoundException.class)
-    public ResponseEntity<ProblemDetail> handlerCreditAnalysisNotFoundException(CreditAnalysisNotFoundException e) {
-        final ProblemDetail problemDetail = problemDetailBuilder(
-                HttpStatus.NOT_FOUND, e.getClass().getSimpleName(),
+                HttpStatus.valueOf(e.status()), e.getClass().getSimpleName(),
                 e.getMessage(), e);
         return ResponseEntity.status(problemDetail.getStatus())
                 .body(problemDetail
@@ -55,36 +43,6 @@ public class RestExceptionHandler {
     public ResponseEntity<ProblemDetail> handlerDivergentCreditAnalysisAndClientException(DivergentCreditAnalysisAndClientException e) {
         final ProblemDetail problemDetail = problemDetailBuilder(
                 HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
-                e.getMessage(), e);
-        return ResponseEntity.status(problemDetail.getStatus())
-                .body(problemDetail
-                );
-    }
-
-    @ExceptionHandler(IncompleteBanckAccountException.class)
-    public ResponseEntity<ProblemDetail> handlerIncompleteBanckAccountException(IncompleteBanckAccountException e) {
-        final ProblemDetail problemDetail = problemDetailBuilder(
-                HttpStatus.BAD_REQUEST, e.getClass().getSimpleName(),
-                e.getMessage(), e);
-        return ResponseEntity.status(problemDetail.getStatus())
-                .body(problemDetail
-                );
-    }
-
-    @ExceptionHandler(BankAccountInvalidDataException.class)
-    public ResponseEntity<ProblemDetail> handlerBankAccountInvalidDataException(BankAccountInvalidDataException e) {
-        final ProblemDetail problemDetail = problemDetailBuilder(
-                HttpStatus.BAD_REQUEST, e.getClass().getSimpleName(),
-                e.getMessage(), e);
-        return ResponseEntity.status(problemDetail.getStatus())
-                .body(problemDetail
-                );
-    }
-
-    @ExceptionHandler(DuplicatedCardHolderException.class)
-    public ResponseEntity<ProblemDetail> handlerDuplicatedCardHolderException(DuplicatedCardHolderException e) {
-        final ProblemDetail problemDetail = problemDetailBuilder(
-                HttpStatus.CONFLICT, e.getClass().getSimpleName(),
                 e.getMessage(), e);
         return ResponseEntity.status(problemDetail.getStatus())
                 .body(problemDetail
@@ -132,11 +90,30 @@ public class RestExceptionHandler {
                 );
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ProblemDetail> handlerDataIntegrityViolationException(DataIntegrityViolationException e) {
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(RetryableException.class)
+    public ResponseEntity<ProblemDetail> handlerRetryableException(RetryableException e) {
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.INTERNAL_SERVER_ERROR, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
     @ExceptionHandler(StatusOutOfFormatException.class)
     public ResponseEntity<ProblemDetail> handlerStatusOutOfFormatException(StatusOutOfFormatException e) {
-
         final ProblemDetail problemDetail = problemDetailBuilder(
-                HttpStatus.BAD_REQUEST, e.getClass().getSimpleName(),
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
                 e.getMessage(), e);
         return ResponseEntity.status(problemDetail.getStatus())
                 .body(problemDetail
@@ -153,5 +130,7 @@ public class RestExceptionHandler {
                 .body(problemDetail
                 );
     }
+
+
 
 }

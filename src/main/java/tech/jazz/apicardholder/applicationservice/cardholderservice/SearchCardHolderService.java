@@ -1,6 +1,7 @@
 package tech.jazz.apicardholder.applicationservice.cardholderservice;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,19 +22,22 @@ public class SearchCardHolderService {
 
     public List<CardHolderResponse> listAll(String status) {
 
-        if (status == null) {
+        if (Objects.isNull(status)) {
             return cardHolderRepository.findAll().stream()
                     .map(cardHolderMapper::from)
                     .collect(Collectors.toList());
         } else {
-            switch (status.toUpperCase()) {
+            status = status.toUpperCase();
+            switch (status) {
             case "ACTIVE":
             case "INACTIVE":
-                return cardHolderRepository.findByStatusEnum(StatusEnum.valueOf(status.toUpperCase())).stream()
+                final List<CardHolderEntity> cardHolderEntities =
+                        cardHolderRepository.findByStatusEnum(StatusEnum.valueOf(status));
+                return cardHolderEntities.stream()
                         .map(cardHolderMapper::from)
                         .collect(Collectors.toList());
             default:
-                throw new StatusOutOfFormatException("Status not acceptable, please insert ACTIVE or INACTIVE");
+                throw new StatusOutOfFormatException("Incorrect status. Only accept ACTIVE or INACTIVE");
             }
         }
     }
