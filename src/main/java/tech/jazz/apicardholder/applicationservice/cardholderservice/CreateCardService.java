@@ -8,7 +8,6 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tech.jazz.apicardholder.infrastructure.domain.CardDomain;
 import tech.jazz.apicardholder.infrastructure.mapper.CardHolderMapper;
 import tech.jazz.apicardholder.infrastructure.mapper.CardMapper;
 import tech.jazz.apicardholder.infrastructure.repository.CardHolderRepository;
@@ -36,18 +35,19 @@ public class CreateCardService {
         final CardHolderEntity cardHolderEntity = cardHolderRepository.findByCardHolderId(cardRequest.cardHolderId()).orElseThrow(
                 () -> new CardHolderNotFoundException("Card Holder not found for given id")
         );
-        checkIfLimitIsSufficientOfThrowException(cardRequest, cardHolderEntity);
-        final CardEntity cardEntity = CardEntity.builder()
+        checkIfLimitIsSufficient(cardRequest, cardHolderEntity);
+        CardEntity cardEntity = CardEntity.builder()
                 .cvv(generateCvv())
                 .cardNumber(generateCardNumber())
                 .dueDate(LocalDate.now().plusYears(5).plusMonths(1))
                 .cardHolder(cardHolderEntity)
                 .limit(cardRequest.limit())
                 .build();
-        return cardMapper.from(cardRepository.save(cardEntity));
+        cardEntity = cardRepository.save(cardEntity);
+        return cardMapper.from(cardEntity);
     }
 
-    private void checkIfLimitIsSufficientOfThrowException(CardRequest cardRequest, CardHolderEntity cardHolder) {
+    private void checkIfLimitIsSufficient(CardRequest cardRequest, CardHolderEntity cardHolder) {
         final List<CardEntity> cardEntities = cardRepository.findByCardHolder_CardHolderId(cardRequest.cardHolderId());
         final BigDecimal usedLimit = cardEntities.stream()
                 .map(CardEntity::getLimit)
@@ -73,12 +73,13 @@ public class CreateCardService {
             if (i % 2 == 0) {
                 sum += cardNumber.get(i);
             } else {
-                cardNumber.set(i, cardNumber.get(i) * 2);
-                if (cardNumber.get(i) > 9) {
-                    cardNumber.set(i, cardNumber.get(i) - 9);
+                Integer aux = cardNumber.get(i) * 2;
+                if (aux > 9) {
+                    aux = cardNumber.get(i) - 9;
                 }
-                sum += cardNumber.get(i);
+                sum += aux;
             }
+
         }
         verifier = sum;
         while (verifier > 10) {
