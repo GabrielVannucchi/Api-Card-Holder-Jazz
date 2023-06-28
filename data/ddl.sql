@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS bank_account(
 );
 CREATE TABLE IF NOT EXISTS card_holder(
         card_holder_id UUID,
-        client_id UUID,
+        client_id UUID unique,
         credit_analysis_id UUID,
         status varchar(8),
         limit_Value decimal(10,2),
