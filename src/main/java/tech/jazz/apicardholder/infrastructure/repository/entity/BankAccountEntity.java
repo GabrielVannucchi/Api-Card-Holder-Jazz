@@ -8,11 +8,13 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Immutable;
 
 @Entity
 @Table(name = "BANK_ACCOUNT")
 @NoArgsConstructor
 @Getter
+@Immutable
 public class BankAccountEntity {
     @Id
     @Column(name = "bank_account_id")

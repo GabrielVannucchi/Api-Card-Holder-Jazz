@@ -1,15 +1,19 @@
 package tech.jazz.apicardholder.infrastructure.domain;
 
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import tech.jazz.apicardholder.infrastructure.repository.util.ValidationCustom;
 
 public record BankAccountDomain(
-        @Pattern(regexp = "^\\d{8}-\\d$|^\\d{9}$|^\\d{8}-[Xx]$", message = "Insert a valid Account Number")
+        @Pattern(regexp = "^\\d{8}-\\d$|^\\d{9}$|^\\d{8}-[Xx]$", message = "Invalid Account Number")
+        @NotNull
         String account,
-        @Pattern(regexp = "\\d{4}", message = "Insert a valid Agency")
+        @Pattern(regexp = "\\d{4}", message = "Invalid Agency")
+        @NotNull
         String agency,
-        @Pattern(regexp = "\\d{3}", message = "Insert a valid bank code")
+        @Pattern(regexp = "\\d{3}", message = "Invalid bank code")
+        @NotNull
         String bankCode
 ) {
     @Builder

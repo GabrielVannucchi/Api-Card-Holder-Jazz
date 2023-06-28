@@ -26,14 +26,17 @@ public class SearchCardHolderService {
                     .map(cardHolderMapper::from)
                     .collect(Collectors.toList());
         } else {
-            switch (status.toUpperCase()) {
+            status = status.toUpperCase();
+            switch (status) {
             case "ACTIVE":
             case "INACTIVE":
-                return cardHolderRepository.findByStatusEnum(StatusEnum.valueOf(status.toUpperCase())).stream()
+                final List<CardHolderEntity> cardHolderEntities =
+                        cardHolderRepository.findByStatusEnum(StatusEnum.valueOf(status));
+                return cardHolderEntities.stream()
                         .map(cardHolderMapper::from)
                         .collect(Collectors.toList());
             default:
-                throw new StatusOutOfFormatException("Status not acceptable, please insert ACTIVE or INACTIVE");
+                throw new StatusOutOfFormatException("Incorrect status. Only accept ACTIVE or INACTIVE");
             }
         }
     }
