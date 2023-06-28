@@ -22,7 +22,7 @@ import tech.jazz.apicardholder.presentation.dto.CardRequest;
 import tech.jazz.apicardholder.presentation.dto.CardResponse;
 
 @RestController
-@RequestMapping("card-holders/v1.0")
+@RequestMapping("v1.0/card-holders")
 @RequiredArgsConstructor
 public class CardHolderController {
     private final CreateCardHolderService createCardHolderService;
@@ -41,7 +41,7 @@ public class CardHolderController {
         return searchCardHolderService.listAll(status);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public CardHolderResponse findCardHolder(@PathVariable UUID id) {
         return searchCardHolderService.findCardHolder(id);

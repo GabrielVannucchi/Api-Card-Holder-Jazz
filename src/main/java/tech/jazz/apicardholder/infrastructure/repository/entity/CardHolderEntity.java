@@ -15,6 +15,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.UpdateTimestamp;
 import tech.jazz.apicardholder.infrastructure.repository.util.StatusEnum;
 
@@ -22,6 +23,7 @@ import tech.jazz.apicardholder.infrastructure.repository.util.StatusEnum;
 @Table(name = "CARD_HOLDER")
 @NoArgsConstructor
 @Getter
+@Immutable
 public class CardHolderEntity {
 
     @Id
@@ -31,7 +33,7 @@ public class CardHolderEntity {
     @Column(name = "credit_analysis_id")
     UUID creditAnalysisId;
 
-    @Column(name = "client_id")
+    @Column(name = "client_id", unique = true)
     UUID clientId;
 
     @Enumerated(EnumType.STRING)
