@@ -17,6 +17,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCreditAnalysisAndClientException;
+import tech.jazz.apicardholder.presentation.handler.exception.InactiveCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitException;
 import tech.jazz.apicardholder.presentation.handler.exception.InvalidCardHolderRequestException;
 import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
@@ -171,6 +172,16 @@ public class RestExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ProblemDetail> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e) {
 
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(InactiveCardHolderException.class)
+    public ResponseEntity<ProblemDetail> handlerInactiveCardHolderException(InactiveCardHolderException e) {
         final ProblemDetail problemDetail = problemDetailBuilder(
                 HttpStatus.UNPROCESSABLE_ENTITY, e.getClass().getSimpleName(),
                 e.getMessage(), e);
