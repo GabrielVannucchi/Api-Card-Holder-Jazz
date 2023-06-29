@@ -134,6 +134,4 @@ class CreateCardHolderServiceTest {
                 .bankAccount(bankAccountEntityFactory())
                 .build();
     }
-
-
 }

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.Builder;
@@ -19,9 +20,21 @@ public record CardDomain(
     public CardDomain(UUID cardHolderId, BigDecimal limit, String cardNumber, Integer cvv, LocalDate dueDate) {
         this.cardHolderId = cardHolderId;
         this.limit = limit;
-        this.cardNumber = generateCardNumber();
-        this.cvv = generateCvv();
-        this.dueDate = generateDueDate();
+        if (Objects.isNull(cardNumber)) {
+            this.cardNumber = generateCardNumber();
+        } else {
+            this.cardNumber = cardNumber;
+        }
+        if (Objects.isNull(cvv)) {
+            this.cvv = generateCvv();
+        } else {
+            this.cvv = cvv;
+        }
+        if (Objects.isNull(dueDate)) {
+            this.dueDate = generateDueDate();
+        } else {
+            this.dueDate = dueDate;
+        }
     }
 
     private LocalDate generateDueDate() {
