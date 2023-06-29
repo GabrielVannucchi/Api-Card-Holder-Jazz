@@ -10,6 +10,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
@@ -58,7 +59,11 @@ public class CardHolderEntity {
     @Builder(toBuilder = true)
     public CardHolderEntity(UUID cardHolderId, UUID creditAnalysisId, UUID clientId, StatusEnum statusEnum,
                             BigDecimal limit, BankAccountEntity bankAccount) {
-        this.cardHolderId = UUID.randomUUID();
+        if (Objects.isNull(cardHolderId)) {
+            this.cardHolderId = UUID.randomUUID();
+        } else {
+            this.cardHolderId = cardHolderId;
+        }
         this.creditAnalysisId = creditAnalysisId;
         this.clientId = clientId;
         this.statusEnum = statusEnum;

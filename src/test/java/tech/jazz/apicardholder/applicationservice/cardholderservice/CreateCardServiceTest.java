@@ -31,6 +31,7 @@ import tech.jazz.apicardholder.presentation.dto.CardRequest;
 import tech.jazz.apicardholder.presentation.dto.CardResponse;
 import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
+import tech.jazz.apicardholder.presentation.handler.exception.InactiveCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitException;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,6 +93,23 @@ class CreateCardServiceTest {
         CardRequest cardRequest = new CardRequest(cardHolderId, BigDecimal.valueOf(200));
 
         assertThrows(InsufficientLimitException.class, () -> createCardService.createCard(cardHolderId, cardRequest));
+
+    }
+
+    @Test
+    void should_throw_InactiveCardHolderException_when_cardHolder_is_inactive() {
+
+        UUID cardHolderId = UUID.fromString("12341234-1234-1234-1234-123412341234");
+        CardRequest cardRequest = new CardRequest(cardHolderId, BigDecimal.valueOf(200));
+
+        Mockito.when(cardHolderRepository.findByCardHolderId(Mockito.any(UUID.class))).thenReturn(
+                Optional.of(
+                        CardHolderEntity.builder()
+                                .cardHolderId(cardHolderId)
+                                .statusEnum(StatusEnum.INACTIVE)
+                                .build()
+                ));
+        assertThrows(InactiveCardHolderException.class, () -> createCardService.createCard(cardHolderId, cardRequest));
 
     }
 
