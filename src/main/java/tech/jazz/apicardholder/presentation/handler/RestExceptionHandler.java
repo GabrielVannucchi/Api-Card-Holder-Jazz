@@ -23,6 +23,7 @@ import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitE
 import tech.jazz.apicardholder.presentation.handler.exception.InvalidCardHolderRequestException;
 import tech.jazz.apicardholder.presentation.handler.exception.StatusOutOfFormatException;
 import tech.jazz.apicardholder.presentation.handler.exception.UnapprovedCreditAnalysisException;
+import tech.jazz.apicardholder.presentation.handler.exception.UpdateFailedException;
 
 @RestControllerAdvice
 public class RestExceptionHandler {
@@ -196,6 +197,17 @@ public class RestExceptionHandler {
 
         final ProblemDetail problemDetail = problemDetailBuilder(
                 HttpStatus.NOT_FOUND, e.getClass().getSimpleName(),
+                e.getMessage(), e);
+        return ResponseEntity.status(problemDetail.getStatus())
+                .body(problemDetail
+                );
+    }
+
+    @ExceptionHandler(UpdateFailedException.class)
+    public ResponseEntity<ProblemDetail> handlerUpdateFailedException(UpdateFailedException e) {
+
+        final ProblemDetail problemDetail = problemDetailBuilder(
+                HttpStatus.INTERNAL_SERVER_ERROR, e.getClass().getSimpleName(),
                 e.getMessage(), e);
         return ResponseEntity.status(problemDetail.getStatus())
                 .body(problemDetail
