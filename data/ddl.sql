@@ -1,4 +1,3 @@
-
 CREATE TABLE IF NOT EXISTS bank_account(
         bank_account_id uuid,
         account_number varchar(10),

@@ -33,6 +33,7 @@ import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFound
 import tech.jazz.apicardholder.presentation.handler.exception.CardNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitException;
+import tech.jazz.apicardholder.presentation.handler.exception.UpdateFailedException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -58,13 +59,28 @@ class PatchCardServiceTest {
                 .thenReturn(Optional.of(cardHolderEntityFactory(cardHolderId)));
         Mockito.when(cardRepository.findById(cardId)).thenReturn(Optional.of(cardEntityFactory(cardId, cardHolderId)));
         Mockito.when(cardRepository.findByCardHolder_CardHolderIdAndCardIdNot(cardHolderId, cardId)).thenReturn(List.of());
-        Mockito.when(cardRepository.save(cardCaptor.capture())).thenReturn(cardEntityFactory(cardId, cardHolderId));
+        Mockito.when(cardRepository.updateLimitByCardId(Mockito.any(BigDecimal.class), Mockito.any(UUID.class)))
+                .thenReturn(1);
 
         UpdateLimitResponse updateLimitResponse = patchCardService.updateLimit(cardHolderId, cardId, updateLimitRequest);
 
         assertNotNull(updateLimitResponse);
-        assertNotNull(cardCaptor);
-        assertEquals(cardCaptor.getValue().getLimit().setScale(2), BigDecimal.valueOf(300).setScale(2));
+    }
+
+    @Test
+    void should_throw_UpdateFailedException_when_query_returns_zero() {
+        UUID cardHolderId = UUID.randomUUID();
+        UUID cardId = UUID.randomUUID();
+        UpdateLimitRequest updateLimitRequest = new UpdateLimitRequest(BigDecimal.valueOf(300));
+
+        Mockito.when(cardHolderRepository.findByCardHolderId(cardHolderId))
+                .thenReturn(Optional.of(cardHolderEntityFactory(cardHolderId)));
+        Mockito.when(cardRepository.findById(cardId)).thenReturn(Optional.of(cardEntityFactory(cardId, cardHolderId)));
+        Mockito.when(cardRepository.findByCardHolder_CardHolderIdAndCardIdNot(cardHolderId, cardId)).thenReturn(List.of());
+        Mockito.when(cardRepository.updateLimitByCardId(Mockito.any(BigDecimal.class), Mockito.any(UUID.class)))
+                .thenReturn(0);
+
+        assertThrows(UpdateFailedException.class, () -> patchCardService.updateLimit(cardHolderId, cardId, updateLimitRequest));
     }
 
     @Test

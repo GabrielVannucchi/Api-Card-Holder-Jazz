@@ -15,6 +15,7 @@ import tech.jazz.apicardholder.presentation.handler.exception.CardHolderNotFound
 import tech.jazz.apicardholder.presentation.handler.exception.CardNotFoundException;
 import tech.jazz.apicardholder.presentation.handler.exception.DivergentCardHolderException;
 import tech.jazz.apicardholder.presentation.handler.exception.InsufficientLimitException;
+import tech.jazz.apicardholder.presentation.handler.exception.UpdateFailedException;
 
 @Service
 @RequiredArgsConstructor
@@ -24,18 +25,20 @@ public class PatchCardService {
 
     public UpdateLimitResponse updateLimit(UUID cardHolderId, UUID cardId, UpdateLimitRequest updateLimitRequest) {
         final CardHolderEntity cardHolderEntity = getCardHolder(cardHolderId);
-        CardEntity cardEntity = cardRepository.findById(cardId).orElseThrow(
+        final CardEntity cardEntity = cardRepository.findById(cardId).orElseThrow(
                 () -> new CardNotFoundException("Card not found for given Id"));
-        checkIfLimitIsSufficientOfThrowException(updateLimitRequest.limit(), cardHolderEntity, cardEntity);
         if (!cardHolderId.equals(cardEntity.getCardHolder().getCardHolderId())) {
             throw new DivergentCardHolderException("This card does not belong this card holder");
         }
-        cardEntity = cardEntity.toBuilder()
+        checkIfLimitIsSufficientOfThrowException(updateLimitRequest.limit(), cardHolderEntity, cardEntity);
+        final CardEntity cardEntityUpdatedLimit = cardEntity.toBuilder()
                 .limit(updateLimitRequest.limit().setScale(2))
                 .build();
-        cardEntity = cardRepository.save(cardEntity);
-
-        return new UpdateLimitResponse(cardEntity.getCardId(), cardEntity.getLimit());
+        final int rowsAffected = cardRepository.updateLimitByCardId(cardEntityUpdatedLimit.getLimit(), cardEntityUpdatedLimit.getCardId());
+        if (rowsAffected < 1) {
+            throw new UpdateFailedException("Limit not updated");
+        }
+        return new UpdateLimitResponse(cardEntityUpdatedLimit.getCardId(), cardEntityUpdatedLimit.getLimit());
     }
 
     private void checkIfLimitIsSufficientOfThrowException(BigDecimal newLimit, CardHolderEntity cardHolder, CardEntity card) {

@@ -14,12 +14,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
 @Table(name = "card")
 @Getter
 @NoArgsConstructor
+@Immutable
 public class CardEntity {
     @Id
     @Column(name = "card_id")
@@ -64,4 +66,6 @@ public class CardEntity {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+
 }

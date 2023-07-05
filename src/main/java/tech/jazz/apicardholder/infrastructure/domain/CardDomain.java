@@ -17,7 +17,8 @@ public record CardDomain(
         LocalDate dueDate
 ) {
     @Builder(toBuilder = true)
-    public CardDomain(UUID cardHolderId, BigDecimal limit, String cardNumber, Integer cvv, LocalDate dueDate) {
+    public CardDomain(UUID cardHolderId, BigDecimal limit, String cardNumber,
+                      Integer cvv, LocalDate dueDate) {
         this.cardHolderId = cardHolderId;
         this.limit = limit;
         if (Objects.isNull(cardNumber)) {
